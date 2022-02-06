@@ -17,15 +17,26 @@ class _ConvertPageState extends State<ConvertPage> {
 
   @override
   Widget build(BuildContext context) {
-    final coinProvider = Provider.of<CoinCountrieProvider>(context);
-    final coin = ModalRoute.of(context)!.settings.arguments as CoinCountrie;
+    final coinProvider = Provider.of<CoinProvider>(context);
+    final data = ModalRoute.of(context)!.settings.arguments as List;
+    final coin = data[0] as Coin;
+    final typeCurrency = data[1] as String;
     final coinCoverted = coinProvider.coinToConverted;
     final valueConversion = coinProvider.valueCoinConversion;
-
     final size = MediaQuery.of(context).size;
-    final list_coinsPrimary = coinProvider.coins;
-    final list_coinsSecondary =
-        [...coinProvider.coins].where((item) => item.id != coin.id).toList();
+    final list_coinsPrimary;
+    final list_coinsSecondary;
+    if (typeCurrency.toLowerCase() == 'countries') {
+      list_coinsPrimary = coinProvider.coinsCountries;
+      list_coinsSecondary = [...coinProvider.coinsCountries]
+          .where((item) => item.id != coin.id)
+          .toList();
+    } else {
+      list_coinsPrimary = coinProvider.coinsCryptos;
+      list_coinsSecondary = [...coinProvider.coinsCryptos]
+          .where((item) => item.id != coin.id)
+          .toList();
+    }
 
     return Scaffold(
       body: Container(
@@ -49,6 +60,7 @@ class _ConvertPageState extends State<ConvertPage> {
                 children: [
                   IconButton(
                     onPressed: () {
+                      coinProvider.setCoinValueConversion(0.00);
                       Navigator.pushReplacementNamed(context, 'home');
                     },
                     icon: Icon(
@@ -74,6 +86,7 @@ class _ConvertPageState extends State<ConvertPage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 50),
                       child: SelectedCoin(
+                        typeCurrency: typeCurrency,
                         symbol: coin.symbol!,
                         isDesactive: true,
                         coins: list_coinsPrimary,
@@ -86,6 +99,7 @@ class _ConvertPageState extends State<ConvertPage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 50),
                       child: SelectedCoin(
+                        typeCurrency: typeCurrency,
                         symbol: '',
                         coins: list_coinsSecondary,
                         size: size,
@@ -166,9 +180,9 @@ class _ConvertPageState extends State<ConvertPage> {
 
   Widget _convertBtn(
     Size size, {
-    required CoinCountrie coinActual,
-    required CoinCountrie? coinConverted,
-    required CoinCountrieProvider provider,
+    required Coin coinActual,
+    required Coin? coinConverted,
+    required CoinProvider provider,
   }) {
     return MaterialButton(
       onPressed: () {
@@ -214,13 +228,12 @@ class _ConvertPageState extends State<ConvertPage> {
       onPressed: () {
         setState(() {
           /**
-           * Valido si el text está vacio y si la tecla es el .
+           * Valido si el text está vacio y si la tecla es el . y si es 0
            * si es asi no escribe.
            */
 
-          if (textController.text == '' &&
-              numberPulseInScreen == '.' &&
-              numberPulseInScreen == '0') {
+          if (textController.text == '' && numberPulseInScreen == '.' ||
+              textController.text == '' && numberPulseInScreen == '0') {
             textController.text = '';
           } else {
             /**
@@ -281,13 +294,14 @@ class SelectedCoin extends StatefulWidget {
       required this.size,
       required this.valueRate,
       required this.symbol,
+      required this.typeCurrency,
       this.valueConversion,
       this.valueInputUser,
       this.isDesactive = false,
       this.coinID})
       : super(key: key);
 
-  final List<CoinCountrie> coins;
+  final List<Coin> coins;
   final Size size;
   String symbol;
   String? valueRate;
@@ -295,6 +309,7 @@ class SelectedCoin extends StatefulWidget {
   bool isDesactive;
   String? valueInputUser;
   double? valueConversion;
+  String typeCurrency;
 
   @override
   State<SelectedCoin> createState() => _SelectedCoinState();
@@ -307,7 +322,7 @@ class _SelectedCoinState extends State<SelectedCoin> {
 
   @override
   Widget build(BuildContext context) {
-    final coinProvider = Provider.of<CoinCountrieProvider>(context);
+    final coinProvider = Provider.of<CoinProvider>(context);
     //Si en ambas variables que es el valor de la moneda seleccionada y el simbolo son null
     //le indico la que tenga por defecto
     if (rateCoinSelected == null) {
@@ -342,13 +357,20 @@ class _SelectedCoinState extends State<SelectedCoin> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Flag.fromString(
-                        coin.codeFlag!,
-                        height: 40,
-                        width: 50,
-                        fit: BoxFit.cover,
-                        borderRadius: 10,
-                      ),
+                      widget.typeCurrency.toLowerCase() == 'countries'
+                          ? Flag.fromString(
+                              coin.codeFlag!,
+                              fit: BoxFit.cover,
+                              height: 40,
+                              width: 50,
+                              borderRadius: 12,
+                            )
+                          : Image.network(
+                              coin.codeFlag!,
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.cover,
+                            ),
                       SizedBox(
                         width: 10,
                       ),
@@ -374,6 +396,7 @@ class _SelectedCoinState extends State<SelectedCoin> {
 
                 //Añado la moneda seleccionada al provider para ser utilizada despues para su conversión
                 coinProvider.setCoinToConverted(coin);
+                coinProvider.setCoinValueConversion(0.00);
                 //Igualo el id del coin a la variable coinIDSelected
                 _coinIdSelected = value.toString();
               });
@@ -429,41 +452,6 @@ class _SelectedCoinState extends State<SelectedCoin> {
           ),
         )
       ],
-    );
-  }
-}
-
-class selectItems extends StatelessWidget {
-  const selectItems({
-    Key? key,
-    required this.typeCoin,
-  }) : super(key: key);
-
-  final List<String> typeCoin;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-      onChanged: (value) {},
-      onTap: () {
-        print('tap');
-      },
-      underline: Container(
-        height: 2,
-        color: AppSettings.colorPrimaryLigth,
-      ),
-      icon: const Icon(Icons.keyboard_arrow_down),
-      style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontFamily: 'Gilroy-ExtraBold',
-          color: AppSettings.colorPrimaryFont),
-      value: typeCoin[0],
-      items: typeCoin.map((coin) {
-        return DropdownMenuItem(
-          child: Text(coin),
-          value: coin,
-        );
-      }).toList(),
     );
   }
 }

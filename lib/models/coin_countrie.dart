@@ -4,8 +4,8 @@
 
 import 'dart:convert';
 
-class CoinCountrie {
-  CoinCountrie({
+class Coin {
+  Coin({
     this.id,
     this.codeFlag,
     this.name,
@@ -19,7 +19,7 @@ class CoinCountrie {
   double? rate;
   String? symbol;
 
-  factory CoinCountrie.fromJson(Map<String, dynamic> json, String id_fb) => CoinCountrie(
+  factory Coin.fromJson(Map<String, dynamic> json, String id_fb) => Coin(
         id: id_fb,
         codeFlag: json["code_flag"],
         name: json["name"],
@@ -36,17 +36,19 @@ class CoinCountrie {
 }
 
 class CoinCountrieResponse {
-  List<CoinCountrie>? coins;
+  List<Coin>? coins;
 
   CoinCountrieResponse.fromJson(parsedJson) {
-    coins = getCountries(parsedJson);
+    coins = getCoins(parsedJson);
   }
 
-  List<CoinCountrie> getCountries(Map<String, dynamic> parsedJson) {
+  List<Coin> getCoins(Map<String, dynamic> parsedJson) {
     List<String>? id_values = parsedJson.keys.toList();
-    return id_values.map((id_coin) => CoinCountrie.fromJson(parsedJson[id_coin], id_coin)).toList();
+    return id_values
+        .map((id_coin) => Coin.fromJson(parsedJson[id_coin], id_coin))
+        .toList();
   }
 }
 
-CoinCountrieResponse coinCountrieResponseFromJson(String json) =>
+CoinCountrieResponse coinsResponseFromJson(String json) =>
     CoinCountrieResponse.fromJson(jsonDecode(json));

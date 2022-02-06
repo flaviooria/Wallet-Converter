@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pratica5/models/coin_countrie.dart';
 import 'package:pratica5/provider/coin_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
+import 'package:pratica5/widget/select_currency.dart';
 import 'package:provider/provider.dart';
 
 class SearchCoinPage extends StatelessWidget {
@@ -10,19 +11,27 @@ class SearchCoinPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final coinProvider = Provider.of<CoinCountrieProvider>(context);
-    List<CoinCountrie>? coinsCountries = coinProvider.coinsSearched.isEmpty
-        ? coinProvider.coins
-        : coinProvider.coinsSearched;
+    final coinProvider = Provider.of<CoinProvider>(context);
+    List<Coin>? coins;
+    if (coinProvider.typeCurrency.toLowerCase() == 'countries') {
+      coins = coinProvider.coinsSearched.isEmpty
+          ? coinProvider.coinsCountries
+          : coinProvider.coinsSearched;
+    } else {
+      coins = coinProvider.coinsSearched.isEmpty
+          ? coinProvider.coinsCryptos
+          : coinProvider.coinsSearched;
+    }
+
     final size = MediaQuery.of(context).size;
 
     //Aqui uso el metodo del textController que es un escuchador de eventos!!!
     textController.addListener(() {
       final query = textController.text;
-      coinProvider.getCoinsCountriesByName(query);
+      coinProvider.typeCurrency.toLowerCase() == 'countries'
+          ? coinProvider.getCoinsCountriesByName(query)
+          : coinProvider.getCoinsCryptoByName(query);
     });
-
-    //coinsCountries.forEach((element) => print(element.name));
 
     return Scaffold(
       body: SafeArea(
@@ -35,6 +44,23 @@ class SearchCoinPage extends StatelessWidget {
                   height: 20,
                 ),
                 _searchBar(size),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Select type currency',
+                        style: TextStyle(
+                            fontFamily: 'Gilroy Extra-Bold',
+                            color: AppSettings.colorPrimaryFont,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      SelectCurrency(typeCoin: ['Countries', 'Cryptos']),
+                    ],
+                  ),
+                ),
                 Container(
                   height: size.height * 0.8,
                   child: ListView(shrinkWrap: true, children: [
@@ -42,12 +68,21 @@ class SearchCoinPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        coinsCountries.isEmpty
-                            ? Center(
-                                child: CircularProgressIndicator(
-                                color: AppSettings.colorPrimaryLigth,
-                              ))
-                            : _createdCountries(context, coinsCountries),
+                        coinProvider.typeCurrency.toLowerCase() == 'countries'
+                            ? coins.isEmpty
+                                ? Center(
+                                    child: CircularProgressIndicator(
+                                    color: AppSettings.colorPrimaryLigth,
+                                  ))
+                                : _createdListCoins(
+                                    context, coins, coinProvider.typeCurrency)
+                            : coins.isEmpty
+                                ? Center(
+                                    child: CircularProgressIndicator(
+                                    color: AppSettings.colorPrimaryLigth,
+                                  ))
+                                : _createdListCoins(
+                                    context, coins, coinProvider.typeCurrency)
                       ],
                     ),
                   ]),
@@ -60,7 +95,7 @@ class SearchCoinPage extends StatelessWidget {
     );
   }
 
-  Padding _createdCountries(context, List<CoinCountrie> coins) {
+  Widget _createdListCoins(context, List<Coin> coins, String typeCurrency) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30),
       child: Container(
@@ -83,17 +118,24 @@ class SearchCoinPage extends StatelessWidget {
                   onTap: () => {
                     textController.dispose(),
                     Navigator.pushReplacementNamed(context, 'convert',
-                        arguments: coin)
+                        arguments: [coin, typeCurrency])
                   },
                   child: Row(
                     children: [
-                      Flag.fromString(
-                        coin.codeFlag!,
-                        fit: BoxFit.cover,
-                        height: 40,
-                        width: 50,
-                        borderRadius: 12,
-                      ),
+                      typeCurrency.toLowerCase() == 'countries'
+                          ? Flag.fromString(
+                              coin.codeFlag!,
+                              fit: BoxFit.cover,
+                              height: 40,
+                              width: 50,
+                              borderRadius: 12,
+                            )
+                          : Image.network(
+                              coin.codeFlag!,
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                            ),
                       SizedBox(
                         width: 15,
                       ),
@@ -148,7 +190,7 @@ class SearchCoinPage extends StatelessWidget {
                     hintStyle: TextStyle(
                         color: AppSettings.colorPrimaryFont,
                         fontWeight: FontWeight.w600),
-                    hintText: 'Search Country'),
+                    hintText: 'Search Coin'),
               ),
             ),
           ),
