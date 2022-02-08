@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pratica5/pages/convert_page.dart';
 import 'package:pratica5/pages/pages.dart';
-import 'package:pratica5/pages/search_coin_page.dart';
 import 'package:pratica5/provider/coin_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +32,8 @@ class MaterialAppWithProvider extends StatelessWidget {
         'intro': (_) => IntroPage(),
         'home': (_) => HomePage(),
         'convert': (_) => ConvertPage(),
-        'searched': (_) => SearchCoinPage()
+        'searched': (_) => SearchCoinPage(),
+        'settings': (_) => SettingsPage()
       },
       debugShowCheckedModeBanner: false,
     );

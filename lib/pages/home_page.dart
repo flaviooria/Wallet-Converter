@@ -1,7 +1,7 @@
-import 'package:bottom_bar/bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:pratica5/pages/convert_page.dart';
-import 'package:pratica5/pages/search_coin_page.dart';
+
+import 'package:bottom_bar/bottom_bar.dart';
+import 'package:pratica5/pages/pages.dart';
 import 'package:pratica5/utils/AppSettings.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
         //Sirve para desactivar el swipe
         physics: NeverScrollableScrollPhysics(),
         controller: _pageController,
-        children: [SearchCoinPage()],
+        children: [SearchCoinPage(), SettingsPage()],
         onPageChanged: (index) {
           setState(() => _currentPage = index);
         },
@@ -33,12 +33,6 @@ class _HomePageState extends State<HomePage> {
           setState(() => _currentPage = index);
         },
         items: <BottomBarItem>[
-          BottomBarItem(
-            inactiveColor: AppSettings.colorPrimaryLigth,
-            icon: Icon(Icons.home),
-            title: Text('Inicio'),
-            activeColor: AppSettings.colorPrimaryFont,
-          ),
           BottomBarItem(
             inactiveColor: AppSettings.colorPrimaryLigth,
             icon: Icon(

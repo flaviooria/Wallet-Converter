@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
-import 'package:pratica5/models/coin_countrie.dart';
+import 'package:pratica5/models/coin.dart';
 
 class CoinProvider with ChangeNotifier {
   CoinProvider() {
@@ -73,12 +73,12 @@ class CoinProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  setCoinToConverted(Coin coinConverted) {
+  setCoinToConverted(Coin? coinConverted) {
     coinToConverted = coinConverted;
     notifyListeners();
   }
 
-  setCoinValueConversion(double value) {
+  setCoinValueConversion(double? value) {
     valueCoinConversion = value;
     notifyListeners();
   }

@@ -1,6 +1,6 @@
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
-import 'package:pratica5/models/coin_countrie.dart';
+import 'package:pratica5/models/coin.dart';
 import 'package:pratica5/provider/coin_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
 import 'package:pratica5/widget/select_currency.dart';
@@ -61,31 +61,29 @@ class SearchCoinPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  height: size.height * 0.8,
-                  child: ListView(shrinkWrap: true, children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        coinProvider.typeCurrency.toLowerCase() == 'countries'
-                            ? coins.isEmpty
-                                ? Center(
-                                    child: CircularProgressIndicator(
-                                    color: AppSettings.colorPrimaryLigth,
-                                  ))
-                                : _createdListCoins(
-                                    context, coins, coinProvider.typeCurrency)
-                            : coins.isEmpty
-                                ? Center(
-                                    child: CircularProgressIndicator(
-                                    color: AppSettings.colorPrimaryLigth,
-                                  ))
-                                : _createdListCoins(
-                                    context, coins, coinProvider.typeCurrency)
-                      ],
-                    ),
-                  ]),
+                SizedBox(
+                  height: 20,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    coinProvider.typeCurrency.toLowerCase() == 'countries'
+                        ? coins.isEmpty
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                color: AppSettings.colorPrimaryLigth,
+                              ))
+                            : _createdListCoins(
+                                context, coins, coinProvider.typeCurrency, size)
+                        : coins.isEmpty
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                color: AppSettings.colorPrimaryLigth,
+                              ))
+                            : _createdListCoins(
+                                context, coins, coinProvider.typeCurrency, size)
+                  ],
                 ),
               ],
             ),
@@ -95,68 +93,66 @@ class SearchCoinPage extends StatelessWidget {
     );
   }
 
-  Widget _createdListCoins(context, List<Coin> coins, String typeCurrency) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30),
-      child: Container(
-        decoration: BoxDecoration(color: Colors.white70, boxShadow: [
-          BoxShadow(
-              color: Colors.grey[300]!,
-              blurRadius: 4,
-              spreadRadius: 2,
-              offset: Offset.fromDirection(0, 10))
-        ]),
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-        width: double.infinity,
-        child: ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (_, int index) {
-              var coin = coins[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: InkWell(
-                  onTap: () => {
-                    textController.dispose(),
-                    Navigator.pushReplacementNamed(context, 'convert',
-                        arguments: [coin, typeCurrency])
-                  },
-                  child: Row(
-                    children: [
-                      typeCurrency.toLowerCase() == 'countries'
-                          ? Flag.fromString(
-                              coin.codeFlag!,
-                              fit: BoxFit.cover,
-                              height: 40,
-                              width: 50,
-                              borderRadius: 12,
-                            )
-                          : Image.network(
-                              coin.codeFlag!,
-                              height: 50,
-                              width: 50,
-                              fit: BoxFit.cover,
-                            ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(
-                        coin.name!,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Gilroy-ExtraBold'),
-                      )
-                    ],
-                  ),
+  Widget _createdListCoins(
+      context, List<Coin> coins, String typeCurrency, Size size) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 30),
+      decoration: BoxDecoration(color: Colors.white70, boxShadow: [
+        BoxShadow(
+            color: Colors.grey[300]!,
+            blurRadius: 4,
+            spreadRadius: 2,
+            offset: Offset.fromDirection(0, 10))
+      ]),
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      height: size.height * 0.7,
+      child: ListView.separated(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemBuilder: (_, int index) {
+            var coin = coins[index];
+            return Container(
+              margin: const EdgeInsets.only(top: 30, bottom: 30),
+              child: InkWell(
+                onTap: () => {
+                  Navigator.pushReplacementNamed(context, 'convert',
+                      arguments: [coin, typeCurrency])
+                },
+                child: Row(
+                  children: [
+                    typeCurrency.toLowerCase() == 'countries'
+                        ? Flag.fromString(
+                            coin.codeFlag!,
+                            fit: BoxFit.cover,
+                            height: 40,
+                            width: 50,
+                            borderRadius: 12,
+                          )
+                        : Image.network(
+                            coin.codeFlag!,
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                          ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      coin.name!,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Gilroy-ExtraBold'),
+                    )
+                  ],
                 ),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(
-                  color: Colors.black38,
-                  thickness: 1.5,
-                ),
-            itemCount: coins.length),
-      ),
+              ),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) => const Divider(
+                color: Colors.black38,
+                thickness: 1.5,
+              ),
+          itemCount: coins.length),
     );
   }
 

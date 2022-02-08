@@ -6,6 +6,6 @@ class AppSettings {
   static Color colorPrimaryLigth = Colors.indigo[100]!;
   static Color colorPrimaryFont = Colors.indigo[300]!;
 
-  static String fontTitle = 'Gilroy-ExtraBold.otf';
-  static String fontText = 'Gilroy-Light.otf';
+  static String fontTitle = 'Gilroy Extra-Bold';
+  static String fontText = 'Gilroy-Light';
 }
