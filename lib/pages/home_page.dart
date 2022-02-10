@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(
               Icons.price_change_outlined,
             ),
-            title: Text('Convertidor'),
+            title: Text('Convertidor', style: TextStyle(fontFamily: 'Gilroy')),
             activeColor: AppSettings.colorPrimaryFont,
           ),
           BottomBarItem(
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(
               Icons.settings_outlined,
             ),
-            title: Text('Ajustes'),
+            title: Text('Ajustes', style: TextStyle(fontFamily: 'Gilroy')),
             activeColor: AppSettings.colorPrimaryFont,
           ),
         ],

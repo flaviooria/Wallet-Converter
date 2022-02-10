@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pratica5/provider/setttings_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
+import 'package:provider/provider.dart';
 
 class IntroPage extends StatefulWidget {
   @override
@@ -24,6 +26,7 @@ class _IntroPageState extends State<IntroPage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SettingsProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,6 +40,7 @@ class _IntroPageState extends State<IntroPage> {
               child: Text(
                 'Saltar',
                 style: TextStyle(
+                    fontFamily: provider.font,
                     color: AppSettings.colorPrimaryFont,
                     fontSize: 18,
                     fontWeight: FontWeight.w400),
@@ -60,17 +64,20 @@ class _IntroPageState extends State<IntroPage> {
                   image: 'assets/intro_page/1.png',
                   title: 'Divisas y Criptos',
                   content:
-                      'Convierte todas las monedas del mercado tanto en divisas como en criptomonedas'),
+                      'Convierte todas las monedas del mercado tanto en divisas como en criptomonedas',
+                  provider: provider),
               makePage(
                   reverse: true,
                   image: 'assets/intro_page/2.png',
                   title: 'CriptoChain',
-                  content: 'Cambios rapidos y seguros'),
+                  content: 'Cambios rapidos y seguros',
+                  provider: provider),
               makePage(
                   image: 'assets/intro_page/3.png',
                   title: 'Billetera Integrada',
                   content:
-                      'Añade tu billetera y maneja tus cambios de divisas y cripto de manera facíl.'),
+                      'Añade tu billetera y maneja tus cambios de divisas y cripto de manera facíl.',
+                  provider: provider),
             ],
           ),
           Container(
@@ -85,7 +92,12 @@ class _IntroPageState extends State<IntroPage> {
     );
   }
 
-  Widget makePage({image, title, content, reverse = false}) {
+  Widget makePage(
+      {image,
+      title,
+      content,
+      reverse = false,
+      required SettingsProvider provider}) {
     return Container(
       padding: EdgeInsets.only(left: 50, right: 50, bottom: 60),
       child: Column(
@@ -107,6 +119,7 @@ class _IntroPageState extends State<IntroPage> {
           Text(
             title,
             style: TextStyle(
+                fontFamily: provider.font,
                 color: AppSettings.colorPrimaryFont,
                 fontSize: 30,
                 fontWeight: FontWeight.bold),
@@ -118,6 +131,7 @@ class _IntroPageState extends State<IntroPage> {
             content,
             textAlign: TextAlign.center,
             style: TextStyle(
+                fontFamily: provider.font,
                 color: AppSettings.colorPrimaryLigth,
                 fontSize: 20,
                 fontWeight: FontWeight.w400),

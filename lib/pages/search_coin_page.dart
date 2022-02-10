@@ -6,12 +6,16 @@ import 'package:pratica5/utils/AppSettings.dart';
 import 'package:pratica5/widget/select_currency.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/setttings_provider.dart';
+
 class SearchCoinPage extends StatelessWidget {
   final textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final coinProvider = Provider.of<CoinProvider>(context);
+    final settingProvider = Provider.of<SettingsProvider>(context);
+
     List<Coin>? coins;
     if (coinProvider.typeCurrency.toLowerCase() == 'countries') {
       coins = coinProvider.coinsSearched.isEmpty
@@ -35,15 +39,15 @@ class SearchCoinPage extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   height: 20,
                 ),
-                _searchBar(size),
+                _searchBar(size, settingProvider),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Row(
@@ -53,9 +57,9 @@ class SearchCoinPage extends StatelessWidget {
                       Text(
                         'Select type currency',
                         style: TextStyle(
-                            fontFamily: 'Gilroy Extra-Bold',
+                            fontFamily: settingProvider.font,
                             color: AppSettings.colorPrimaryFont,
-                            fontWeight: FontWeight.w700),
+                            fontWeight: settingProvider.fontWeight),
                       ),
                       SelectCurrency(typeCoin: ['Countries', 'Cryptos']),
                     ],
@@ -75,14 +79,22 @@ class SearchCoinPage extends StatelessWidget {
                                 color: AppSettings.colorPrimaryLigth,
                               ))
                             : _createdListCoins(
-                                context, coins, coinProvider.typeCurrency, size)
+                                context,
+                                coins,
+                                coinProvider.typeCurrency,
+                                size,
+                                settingProvider)
                         : coins.isEmpty
                             ? Center(
                                 child: CircularProgressIndicator(
                                 color: AppSettings.colorPrimaryLigth,
                               ))
                             : _createdListCoins(
-                                context, coins, coinProvider.typeCurrency, size)
+                                context,
+                                coins,
+                                coinProvider.typeCurrency,
+                                size,
+                                settingProvider)
                   ],
                 ),
               ],
@@ -93,17 +105,20 @@ class SearchCoinPage extends StatelessWidget {
     );
   }
 
-  Widget _createdListCoins(
-      context, List<Coin> coins, String typeCurrency, Size size) {
+  Widget _createdListCoins(context, List<Coin> coins, String typeCurrency,
+      Size size, SettingsProvider provider) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 30),
-      decoration: BoxDecoration(color: Colors.white70, boxShadow: [
-        BoxShadow(
-            color: Colors.grey[300]!,
-            blurRadius: 4,
-            spreadRadius: 2,
-            offset: Offset.fromDirection(0, 10))
-      ]),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(50), topRight: Radius.circular(50)),
+          color: AppSettings.colorPrimaryLigth.withOpacity(.8),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey[500]!,
+                blurRadius: 4,
+                spreadRadius: 2,
+                offset: Offset.fromDirection(0, 0))
+          ]),
       padding: EdgeInsets.symmetric(horizontal: 30),
       height: size.height * 0.7,
       child: ListView.separated(
@@ -140,8 +155,9 @@ class SearchCoinPage extends StatelessWidget {
                     Text(
                       coin.name!,
                       style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Gilroy-ExtraBold'),
+                          color: Colors.black,
+                          fontWeight: provider.fontWeight,
+                          fontFamily: provider.font),
                     )
                   ],
                 ),
@@ -156,7 +172,7 @@ class SearchCoinPage extends StatelessWidget {
     );
   }
 
-  Widget _searchBar(Size size) {
+  Widget _searchBar(Size size, SettingsProvider provider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
@@ -166,16 +182,20 @@ class SearchCoinPage extends StatelessWidget {
           Container(
             width: size.width * 0.9,
             decoration: BoxDecoration(
-              color: Colors.grey[350]!.withOpacity(0.5),
+              color: provider.backgroundSearch ?? Colors.grey[200],
               borderRadius: BorderRadius.circular(10),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
               child: TextField(
                 controller: textController,
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(
+                    fontWeight: provider.fontWeight,
+                    fontSize: 20,
+                    fontFamily: provider.font,
+                    color: AppSettings.colorPrimaryFont),
                 maxLines: 1,
-                cursorColor: Colors.black,
+                cursorColor: AppSettings.colorPrimaryFont,
                 decoration: InputDecoration(
                     suffixIcon: IconButton(
                       onPressed: () {},
@@ -183,9 +203,7 @@ class SearchCoinPage extends StatelessWidget {
                       color: Colors.grey[800],
                     ),
                     border: InputBorder.none,
-                    hintStyle: TextStyle(
-                        color: AppSettings.colorPrimaryFont,
-                        fontWeight: FontWeight.w600),
+                    hintStyle: provider.tStyleDefault,
                     hintText: 'Search Coin'),
               ),
             ),

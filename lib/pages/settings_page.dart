@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:pratica5/provider/setttings_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final options1 = ['Sistema', 'Luminoso', 'Oscuro'];
-    final options2 = ['Sistema', 'Negrita'];
-    final options3 = ['Sin máximo de dígitos', '2 digítos', '3 digítos'];
+    final settingProvider = Provider.of<SettingsProvider>(context);
+
+    final appearance = ['System', 'Ligth', 'Dark'];
+    final textsytles = ['Normal', 'Text Black'];
+    final numdigits = ['No maximum digits', '2 digits', '3 digits'];
 
     return Scaffold(
       body: SafeArea(
@@ -22,14 +26,26 @@ class SettingsPage extends StatelessWidget {
                   SizedBox(
                     height: 30,
                   ),
-                  _title('previsualizar'),
+                  _title('preview', settingProvider),
                   _coinActual(),
-                  _title('Apariencia'),
-                  SelectOptionSettings(options: options1),
-                  _title('Tamaño del Texto'),
-                  SelectOptionSettings(options: options2),
-                  _title('Digítos decimales'),
-                  SelectOptionSettings(options: options3)
+                  _title('appearance', settingProvider),
+                  SelectOptionSettings(
+                    items: appearance,
+                    typeSettigs: 0,
+                    settingsProvider: settingProvider,
+                  ),
+                  _title('text size', settingProvider),
+                  SelectOptionSettings(
+                    items: textsytles,
+                    settingsProvider: settingProvider,
+                    typeSettigs: 1,
+                  ),
+                  _title('decimal digits', settingProvider),
+                  SelectOptionSettings(
+                    items: numdigits,
+                    settingsProvider: settingProvider,
+                    typeSettigs: 2,
+                  )
                 ],
               ),
             ),
@@ -39,13 +55,13 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _title(String title) {
+  Widget _title(String title, SettingsProvider settingsProvider) {
     return Text(
       title.toUpperCase(),
       style: TextStyle(
           color: AppSettings.colorPrimary,
-          fontFamily: AppSettings.fontTitle,
-          fontWeight: FontWeight.w600),
+          fontFamily: settingsProvider.font,
+          fontWeight: settingsProvider.fontWeight),
     );
   }
 
@@ -107,38 +123,92 @@ class SettingsPage extends StatelessWidget {
 }
 
 class SelectOptionSettings extends StatelessWidget {
-  const SelectOptionSettings({
-    Key? key,
-    required this.options,
-  }) : super(key: key);
+  const SelectOptionSettings(
+      {Key? key,
+      required this.typeSettigs,
+      required this.items,
+      required this.settingsProvider})
+      : super(key: key);
 
-  final List<String> options;
-
+  final SettingsProvider settingsProvider;
+  final List<String> items;
+  final int typeSettigs;
   @override
   Widget build(BuildContext context) {
+    final provider = settingsProvider;
     return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 30),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: AppSettings.colorPrimaryLigth,
-          borderRadius: BorderRadius.circular(12)),
-      child: ListView.separated(
-          shrinkWrap: true,
-          itemBuilder: (_, int index) {
-            var title = options[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-              child: Text(title,
-                  style: TextStyle(
-                      color: AppSettings.colorPrimary,
-                      fontFamily: AppSettings.fontTitle,
-                      fontWeight: FontWeight.w600)),
-            );
+        margin: const EdgeInsets.only(top: 10, bottom: 30),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: AppSettings.colorPrimaryLigth,
+            borderRadius: BorderRadius.circular(12)),
+        child: Column(children: data(provider, typeSettigs)));
+  }
+
+  List<Widget> data(SettingsProvider provider, int typeSettings) {
+    List<Widget> settings = [];
+    for (var i = 0; i < items.length; i++) {
+      var title = items[i];
+      var type;
+      var typeSelected;
+
+      //Theme
+      if (typeSettigs == 0) {
+        type = provider.themeOptions[i];
+        typeSelected = provider.typeTheme;
+      }
+      //Text Style
+      if (typeSettigs == 1) {
+        type = provider.styleTextOptions[i];
+        typeSelected = provider.typeText;
+      }
+      //Number digits
+      if (typeSettigs == 2) {
+        type = provider.numberDigitsOptions[i];
+        typeSelected = provider.typeDigits;
+      }
+
+      settings
+        ..add(InkWell(
+          onTap: () {
+            switch (typeSettings) {
+              case 0:
+                provider.setTheme(type);
+                break;
+              case 1:
+                provider.setTextStyle(type);
+                break;
+              case 2:
+                provider.setNumberDigits(type);
+                break;
+            }
           },
-          separatorBuilder: (BuildContext context, int index) => const Divider(
-                thickness: 2,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Text(title,
+                    style: TextStyle(
+                        color: AppSettings.colorPrimary,
+                        fontFamily: provider.font,
+                        fontWeight: provider.fontWeight)),
               ),
-          itemCount: options.length),
-    );
+              typeSelected == type
+                  ? Icon(
+                      Icons.done_rounded,
+                      color: Colors.green,
+                    )
+                  : Text('')
+            ],
+          ),
+        ))
+        ..add(Divider(
+          color: Colors.grey[500]?.withOpacity(.3),
+          thickness: 1.5,
+        ));
+    }
+
+    return settings;
   }
 }

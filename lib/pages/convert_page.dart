@@ -6,6 +6,8 @@ import 'package:pratica5/utils/AppSettings.dart';
 import 'package:pratica5/widget/selected_coin.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/setttings_provider.dart';
+
 class ConvertPage extends StatefulWidget {
   const ConvertPage({Key? key}) : super(key: key);
 
@@ -34,6 +36,8 @@ class _ConvertPageState extends State<ConvertPage> {
   @override
   Widget build(BuildContext context) {
     final coinProvider = Provider.of<CoinProvider>(context);
+    final settingProvider = Provider.of<SettingsProvider>(context);
+
     final data = ModalRoute.of(context)!.settings.arguments as List;
     final coin = data[0] as Coin;
     final typeCurrency = data[1] as String;
@@ -96,7 +100,7 @@ class _ConvertPageState extends State<ConvertPage> {
                 width: size.width * 0.9,
                 height: size.height * 0.35,
                 decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(20)),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -135,7 +139,8 @@ class _ConvertPageState extends State<ConvertPage> {
               child: _convertBtn(size,
                   coinActual: coin,
                   coinConverted: coinCoverted,
-                  provider: coinProvider),
+                  provider: coinProvider,
+                  settingsProvider: settingProvider),
             ),
             Positioned(
               width: size.width * 0.9,
@@ -144,10 +149,10 @@ class _ConvertPageState extends State<ConvertPage> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    renderRow(['7', '8', '9']),
-                    renderRow(['4', '5', '6']),
-                    renderRow(['1', '2', '3']),
-                    renderRowFunctionals()
+                    renderRow(['7', '8', '9'], settingProvider),
+                    renderRow(['4', '5', '6'], settingProvider),
+                    renderRow(['1', '2', '3'], settingProvider),
+                    renderRowFunctionals(settingProvider)
                   ]),
             )
           ],
@@ -156,34 +161,35 @@ class _ConvertPageState extends State<ConvertPage> {
     );
   }
 
-  Widget renderRowFunctionals() {
+  Widget renderRowFunctionals(SettingsProvider settingsProvider) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _renderNumberSelected('0'),
-            _renderNumberSelected('.'),
+            _renderNumberSelected('0', settingsProvider),
+            _renderNumberSelected('.', settingsProvider),
             _deleteNumber()
           ],
         ));
   }
 
-  Widget renderRow(List numbers) {
+  Widget renderRow(List numbers, SettingsProvider settingsProvider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: numbers.map((num) => _renderNumberSelected(num)).toList()),
+          children: numbers
+              .map((num) => _renderNumberSelected(num, settingsProvider))
+              .toList()),
     );
   }
 
-  Widget _convertBtn(
-    Size size, {
-    required Coin coinActual,
-    required Coin? coinConverted,
-    required CoinProvider provider,
-  }) {
+  Widget _convertBtn(Size size,
+      {required Coin coinActual,
+      required Coin? coinConverted,
+      required CoinProvider provider,
+      required SettingsProvider settingsProvider}) {
     return MaterialButton(
       onPressed: () {
         if (coinConverted != null) {
@@ -211,14 +217,16 @@ class _ConvertPageState extends State<ConvertPage> {
           child: Text(
         'Convert'.toUpperCase(),
         style: TextStyle(
+            fontFamily: settingsProvider.font,
             fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontWeight: settingsProvider.fontWeight,
             color: AppSettings.colorPrimary),
       )),
     );
   }
 
-  MaterialButton _renderNumberSelected(String numberPulseInScreen) {
+  MaterialButton _renderNumberSelected(
+      String numberPulseInScreen, SettingsProvider settingsProvider) {
     return MaterialButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       minWidth: 80,
@@ -250,9 +258,10 @@ class _ConvertPageState extends State<ConvertPage> {
       child: Text(
         numberPulseInScreen,
         style: TextStyle(
+            fontFamily: settingsProvider.font,
             fontSize: 24.0,
             color: AppSettings.colorPrimary,
-            fontWeight: FontWeight.w600),
+            fontWeight: settingsProvider.fontWeight),
       ),
     );
   }

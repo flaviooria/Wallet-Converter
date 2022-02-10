@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:pratica5/models/coin.dart';
+import 'package:pratica5/models/enum_settings.dart';
 
 class CoinProvider with ChangeNotifier {
   CoinProvider() {

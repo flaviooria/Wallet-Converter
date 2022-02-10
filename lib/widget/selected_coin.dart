@@ -2,6 +2,7 @@ import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:pratica5/models/coin.dart';
 import 'package:pratica5/provider/coin_provider.dart';
+import 'package:pratica5/provider/setttings_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +42,7 @@ class _SelectedCoinState extends State<SelectedCoin> {
   @override
   Widget build(BuildContext context) {
     final coinProvider = Provider.of<CoinProvider>(context);
+    final settings = Provider.of<SettingsProvider>(context);
     //Si en ambas variables que es el valor de la moneda seleccionada y el simbolo son null
     //le indico la que tenga por defecto
     if (rateCoinSelected == null) {
@@ -58,13 +60,17 @@ class _SelectedCoinState extends State<SelectedCoin> {
           ignoring: widget.isDesactive,
           child: DropdownButton(
             hint: Center(
-              child: Text('Escoge'),
+              child: Text(
+                'Escoge',
+                style: settings.tStyleDefault,
+              ),
             ),
             icon:
                 widget.isDesactive //Esto es para desactivar el dropdown button
                     ? Container()
                     : Icon(
                         Icons.expand_more_rounded,
+                        color: AppSettings.colorPrimaryFont,
                       ),
             underline: Container(),
             value: _coinIdSelected ?? widget.coinID,
@@ -95,6 +101,7 @@ class _SelectedCoinState extends State<SelectedCoin> {
                       Container(
                           width: 50,
                           child: Text(coin.name!,
+                              style: settings.tStyleDefault,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               softWrap: false))
@@ -144,7 +151,7 @@ class _SelectedCoinState extends State<SelectedCoin> {
                             textAlign: TextAlign.right,
                             style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: settings.fontWeight,
                                 color: AppSettings.colorPrimary),
                           )
                         : Text(
@@ -153,16 +160,16 @@ class _SelectedCoinState extends State<SelectedCoin> {
                             textAlign: TextAlign.right,
                             style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: settings.fontWeight,
                                 color: AppSettings.colorPrimary),
                           )
                     : Text(
-                        '${widget.valueConversion!.toStringAsFixed(4)} $symbol.',
+                        '${widget.valueConversion!.toStringAsFixed(settings.numberDigits!)} $symbol.',
                         maxLines: 1,
                         textAlign: TextAlign.right,
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: settings.fontWeight,
                             color: AppSettings.colorPrimary),
                       )
               ],
