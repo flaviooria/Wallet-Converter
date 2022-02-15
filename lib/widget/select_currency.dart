@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pratica5/provider/coin_provider.dart';
-import 'package:pratica5/provider/setttings_provider.dart';
+import 'package:pratica5/provider/settings_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
 import 'package:provider/provider.dart';
 

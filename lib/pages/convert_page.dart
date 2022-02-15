@@ -6,7 +6,7 @@ import 'package:pratica5/utils/AppSettings.dart';
 import 'package:pratica5/widget/selected_coin.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/setttings_provider.dart';
+import '../provider/settings_provider.dart';
 
 class ConvertPage extends StatefulWidget {
   const ConvertPage({Key? key}) : super(key: key);

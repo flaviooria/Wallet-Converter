@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pratica5/provider/setttings_provider.dart';
+import 'package:pratica5/provider/settings_provider.dart';
 import 'package:pratica5/utils/AppSettings.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +36,9 @@ class _IntroPageState extends State<IntroPage> {
           Padding(
             padding: EdgeInsets.only(right: 20, top: 20),
             child: GestureDetector(
-              onTap: () => Navigator.pushReplacementNamed(context, 'home'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, 'home');
+              },
               child: Text(
                 'Saltar',
                 style: TextStyle(

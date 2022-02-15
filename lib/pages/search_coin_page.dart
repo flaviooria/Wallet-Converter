@@ -6,7 +6,7 @@ import 'package:pratica5/utils/AppSettings.dart';
 import 'package:pratica5/widget/select_currency.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/setttings_provider.dart';
+import '../provider/settings_provider.dart';
 
 class SearchCoinPage extends StatelessWidget {
   final textController = TextEditingController();
