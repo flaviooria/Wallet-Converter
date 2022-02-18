@@ -69,6 +69,7 @@ class SettingsProvider extends ChangeNotifier {
     print('0. deviceID');
     //Cargamos tanto como las preferencias y el id device para obtener la id del dispositivo
     _deviceID = await PlatformDeviceId.getDeviceId;
+    _deviceID = _deviceID!.replaceAll(RegExp('[^A-Za-z0-9]'), '').trim();
     _preferences = await SharedPreferences.getInstance();
 
     if (_deviceID != null) {

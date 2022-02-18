@@ -11,8 +11,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => CoinProvider()),
-      ChangeNotifierProvider(create: (_) => SettingsProvider())
+      ChangeNotifierProvider(create: (_) => CoinProvider(), lazy: false),
+      ChangeNotifierProvider(create: (_) => SettingsProvider(), lazy: false)
     ], child: MaterialAppWithProvider());
   }
 }

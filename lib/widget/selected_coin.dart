@@ -59,6 +59,7 @@ class _SelectedCoinState extends State<SelectedCoin> {
         IgnorePointer(
           ignoring: widget.isDesactive,
           child: DropdownButton(
+            borderRadius: BorderRadius.circular(20),
             hint: Center(
               child: Text(
                 'Escoge',
@@ -136,9 +137,9 @@ class _SelectedCoinState extends State<SelectedCoin> {
               borderRadius: BorderRadius.circular(8)),
           child: Padding(
             padding: const EdgeInsets.only(right: 5, left: 5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 widget.valueConversion == null || widget.valueConversion == ''
                     ? widget.valueInputUser == '' ||

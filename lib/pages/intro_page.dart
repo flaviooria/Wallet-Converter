@@ -110,7 +110,11 @@ class _IntroPageState extends State<IntroPage> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Image.asset(image),
+                      child: Image.asset(
+                        image,
+                        width: 300,
+                        height: 300,
+                      ),
                     ),
                     SizedBox(
                       height: 30,
@@ -146,7 +150,7 @@ class _IntroPageState extends State<IntroPage> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Image.asset(image),
+                      child: Image.asset(image, width: 300, height: 300),
                     ),
                   ],
                 )

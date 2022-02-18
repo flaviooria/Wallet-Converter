@@ -149,10 +149,29 @@ class _ConvertPageState extends State<ConvertPage> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    renderRow(['7', '8', '9'], settingProvider),
-                    renderRow(['4', '5', '6'], settingProvider),
-                    renderRow(['1', '2', '3'], settingProvider),
-                    renderRowFunctionals(settingProvider)
+                    renderRow(
+                        numbers: ['7', '8', '9'],
+                        provider: settingProvider,
+                        coinActual: coin,
+                        coinConverted: coinCoverted,
+                        coinProvider: coinProvider),
+                    renderRow(
+                        numbers: ['4', '5', '6'],
+                        provider: settingProvider,
+                        coinActual: coin,
+                        coinConverted: coinCoverted,
+                        coinProvider: coinProvider),
+                    renderRow(
+                        numbers: ['1', '2', '3'],
+                        provider: settingProvider,
+                        coinActual: coin,
+                        coinConverted: coinCoverted,
+                        coinProvider: coinProvider),
+                    renderRowFunctionals(
+                        provider: settingProvider,
+                        coinActual: coin,
+                        coinConverted: coinCoverted,
+                        coinProvider: coinProvider)
                   ]),
             )
           ],
@@ -161,26 +180,50 @@ class _ConvertPageState extends State<ConvertPage> {
     );
   }
 
-  Widget renderRowFunctionals(SettingsProvider settingsProvider) {
+  Widget renderRowFunctionals(
+      {required SettingsProvider provider,
+      required Coin coinActual,
+      required Coin? coinConverted,
+      required CoinProvider coinProvider}) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _renderNumberSelected('0', settingsProvider),
-            _renderNumberSelected('.', settingsProvider),
+            _renderNumberSelected(
+                numberPulseInScreen: '0',
+                settingsProvider: provider,
+                coinActual: coinActual,
+                coinConverted: coinConverted,
+                provider: coinProvider),
+            _renderNumberSelected(
+                numberPulseInScreen: '.',
+                settingsProvider: provider,
+                coinActual: coinActual,
+                coinConverted: coinConverted,
+                provider: coinProvider),
             _deleteNumber()
           ],
         ));
   }
 
-  Widget renderRow(List numbers, SettingsProvider settingsProvider) {
+  Widget renderRow(
+      {required List numbers,
+      required SettingsProvider provider,
+      required Coin coinActual,
+      required Coin? coinConverted,
+      required CoinProvider coinProvider}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: numbers
-              .map((num) => _renderNumberSelected(num, settingsProvider))
+              .map((num) => _renderNumberSelected(
+                  numberPulseInScreen: num,
+                  settingsProvider: provider,
+                  coinActual: coinActual,
+                  provider: coinProvider,
+                  coinConverted: coinConverted))
               .toList()),
     );
   }
@@ -194,15 +237,7 @@ class _ConvertPageState extends State<ConvertPage> {
       onPressed: () {
         if (coinConverted != null) {
           setState(() {
-            print(coinActual.rate);
-            print(coinConverted.rate);
-            final rate = coinActual.rate;
-            final double amount = textController.text == ''
-                ? 1.0
-                : double.parse(textController.text);
-
-            final conversion = (rate! * amount) / coinConverted.rate!;
-            provider.setCoinValueConversion(conversion);
+            makeConvesion(coinActual, coinConverted, provider);
           });
         }
       },
@@ -225,8 +260,26 @@ class _ConvertPageState extends State<ConvertPage> {
     );
   }
 
-  MaterialButton _renderNumberSelected(
-      String numberPulseInScreen, SettingsProvider settingsProvider) {
+  void makeConvesion(
+      Coin coinActual, Coin? coinConverted, CoinProvider provider) {
+    print(coinActual.rate);
+    print(coinConverted?.rate ?? '0');
+
+    final rate = coinActual.rate;
+    final double amount =
+        textController.text == '' ? 1.0 : double.parse(textController.text);
+
+    final conversion = (rate! * amount) / coinConverted!.rate!;
+    provider.setCoinValueConversion(conversion);
+  }
+
+  MaterialButton _renderNumberSelected({
+    required String numberPulseInScreen,
+    required SettingsProvider settingsProvider,
+    required Coin coinActual,
+    Coin? coinConverted,
+    required CoinProvider provider,
+  }) {
     return MaterialButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       minWidth: 80,
@@ -247,10 +300,14 @@ class _ConvertPageState extends State<ConvertPage> {
             /**
              * Si sale que es -1, es porque no se ha escrito nigún punto.
              */
-            if (textController.text.indexOf('.') == -1) {
-              textController.text += numberPulseInScreen;
-            } else if (numberPulseInScreen != '.') {
-              textController.text += numberPulseInScreen;
+            if (textController.text.length <= 10) {
+              if (textController.text.indexOf('.') == -1) {
+                textController.text += numberPulseInScreen;
+                makeConvesion(coinActual, coinConverted, provider);
+              } else if (numberPulseInScreen != '.') {
+                textController.text += numberPulseInScreen;
+                makeConvesion(coinActual, coinConverted, provider);
+              }
             }
           }
         });
